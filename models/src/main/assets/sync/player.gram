@@ -1,0 +1,14 @@
+#JSGF V1.0;
+
+grammar player;
+
+<command> = play    |
+          stop      |
+          next      |
+          previous  |
+          forward   |
+          backward  |
+          repeat    |
+          again     ;
+
+public <player> = <command>+;
