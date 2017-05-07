@@ -35,6 +35,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -48,6 +49,7 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import edu.cmu.pocketsphinx.Assets;
 import edu.cmu.pocketsphinx.Hypothesis;
@@ -69,10 +71,12 @@ public class PocketSphinxActivity extends Activity implements
     private static final String MEDIAPLAYER_SEARCH = "player";
 
     /* Keyword we are looking for to activate menu */
-    private static final String KEYPHRASE = "be quiet";
+    private static final String KEYPHRASE = "wakeup now";
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
+
+    public final HashSet<String> possibilities = new HashSet<>();
 
     private SpeechRecognizer recognizer;
     private HashMap<String, Integer> captions;
@@ -82,6 +86,11 @@ public class PocketSphinxActivity extends Activity implements
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
+
+        possibilities.add("please play");
+        possibilities.add("please stop");
+        possibilities.add("please next");
+        possibilities.add("please previous");
 
         // Prepare the data for UI
         captions = new HashMap<String, Integer>();
@@ -184,14 +193,13 @@ public class PocketSphinxActivity extends Activity implements
 
         String text = hypothesis.getHypstr();
         if (text.equals(KEYPHRASE)) {
-            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
-            sendOrderedBroadcast(i, null);
-
-            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
-            sendOrderedBroadcast(i, null);
+            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.served);
+            mp.start();
             switchSearch(MEDIAPLAYER_SEARCH);
+
         }
+        if(!possibilities.contains(text) && text.length() > 15)
+            return;
         /**else if (text.equals(PHONE_SEARCH))
             switchSearch(PHONE_SEARCH);
         else if (text.equals(FORECAST_SEARCH))
@@ -206,7 +214,6 @@ public class PocketSphinxActivity extends Activity implements
     @Override
     public void onResult(Hypothesis hypothesis) {
         ((TextView) findViewById(R.id.result_text)).setText("");
-        makeText(getApplicationContext(), "asdasd", Toast.LENGTH_SHORT).show();
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
             Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
@@ -221,26 +228,32 @@ public class PocketSphinxActivity extends Activity implements
                         sendOrderedBroadcast(i, null);
                     }
                     break;
-                /*case "please stop":
+                case "please stop":
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
                     sendOrderedBroadcast(i, null);
 
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
                     sendOrderedBroadcast(i, null);
                     break;
-                */case "please play":
+                case "please play":
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
                     sendOrderedBroadcast(i, null);
 
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
                     sendOrderedBroadcast(i, null);
                     break;
-                case "previous":
+                case "please previous":
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
                     sendOrderedBroadcast(i, null);
 
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
                     sendOrderedBroadcast(i, null);
+                    break;
+                case KEYPHRASE:
+                    break;
+                default:
+                    MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.ohboy);
+                    mp.start();
                     break;
             }
 
