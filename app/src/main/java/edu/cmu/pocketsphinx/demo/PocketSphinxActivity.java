@@ -194,8 +194,12 @@ public class PocketSphinxActivity extends Activity implements
 
         String text = hypothesis.getHypstr();
         if (text.equals(KEYPHRASE)) {
-            MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.served);
-            mp.start();
+            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
+            sendOrderedBroadcast(i, null);
+
+            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
+            sendOrderedBroadcast(i, null);
             switchSearch(MEDIAPLAYER_SEARCH);
 
         }
@@ -229,14 +233,14 @@ public class PocketSphinxActivity extends Activity implements
                         sendOrderedBroadcast(i, null);
                     }
                     break;
-                case "please stop":
+                /*case "please stop":
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
                     sendOrderedBroadcast(i, null);
 
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
                     sendOrderedBroadcast(i, null);
                     break;
-                case "please play":
+                */case "please play":
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
                     sendOrderedBroadcast(i, null);
 
