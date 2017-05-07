@@ -199,7 +199,7 @@ public class PocketSphinxActivity extends Activity implements
             switchSearch(MEDIAPLAYER_SEARCH);
 
         }
-        if(!possibilities.contains(text) && text.length() > 15)
+        if(text.length() > 15)
             return;
         /**else if (text.equals(PHONE_SEARCH))
             switchSearch(PHONE_SEARCH);
