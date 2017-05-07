@@ -71,7 +71,7 @@ public class PocketSphinxActivity extends Activity implements
     private static final String MEDIAPLAYER_SEARCH = "player";
 
     /* Keyword we are looking for to activate menu */
-    private static final String KEYPHRASE = "wakeup now";
+    private static final String KEYPHRASE = "just wakeup";
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -189,41 +189,22 @@ public class PocketSphinxActivity extends Activity implements
      */
     @Override
     public void onPartialResult(Hypothesis hypothesis) {
-        if (hypothesis == null)
+        if (hypothesis == null )
             return;
-
+        MediaPlayer mp = MediaPlayer.create(getApplicationContext(), R.raw.served);
+        MediaPlayer mpFail = MediaPlayer.create(getApplicationContext(), R.raw.ohboy);
         String text = hypothesis.getHypstr();
+        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
         if (text.equals(KEYPHRASE)) {
-            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
             i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
             sendOrderedBroadcast(i, null);
 
             i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
             sendOrderedBroadcast(i, null);
             switchSearch(MEDIAPLAYER_SEARCH);
-
-        }
-        if(text.length() > 15)
-            return;
-        /**else if (text.equals(PHONE_SEARCH))
-            switchSearch(PHONE_SEARCH);
-        else if (text.equals(FORECAST_SEARCH))
-            switchSearch(FORECAST_SEARCH);**/
-        else
-            ((TextView) findViewById(R.id.result_text)).setText(text);
-    }
-
-    /**
-     * This callback is called when we stop the recognizer.
-     */
-    @Override
-    public void onResult(Hypothesis hypothesis) {
-        ((TextView) findViewById(R.id.result_text)).setText("");
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
-
-            switch (text){
+            mp.start();
+        }else{
+            switch (text) {
                 case "please next":
                     synchronized (this) {
                         i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
@@ -240,7 +221,60 @@ public class PocketSphinxActivity extends Activity implements
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
                     sendOrderedBroadcast(i, null);
                     break;
-                */case "please play":
+                */
+                case "please play":
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
+                    sendOrderedBroadcast(i, null);
+
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
+                    sendOrderedBroadcast(i, null);
+                    break;
+                case "please previous":
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
+                    sendOrderedBroadcast(i, null);
+
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
+                    sendOrderedBroadcast(i, null);
+                    break;
+                case "please":
+                    return;
+                default:
+                    break;
+            }
+            switchSearch(KWS_SEARCH);
+        }
+
+
+    }
+
+    /**
+     * This callback is called when we stop the recognizer.
+     */
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        /*((TextView) findViewById(R.id.result_text)).setText("");
+        if (hypothesis != null) {
+            String text = hypothesis.getHypstr();
+            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+
+            switch (text){
+                case "please next":
+                    synchronized (this) {
+                        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
+                        sendOrderedBroadcast(i, null);
+
+                        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
+                        sendOrderedBroadcast(i, null);
+                    }
+                    break;
+                case "please stop":
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
+                    sendOrderedBroadcast(i, null);
+
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
+                    sendOrderedBroadcast(i, null);
+                    break;
+                case "please play":
                     i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
                     sendOrderedBroadcast(i, null);
 
@@ -263,7 +297,7 @@ public class PocketSphinxActivity extends Activity implements
             }
 
 
-        }
+        }*/
     }
 
     @Override
@@ -286,7 +320,7 @@ public class PocketSphinxActivity extends Activity implements
         if (searchName.equals(KWS_SEARCH))
             recognizer.startListening(searchName);
         else
-            recognizer.startListening(searchName, 1000);
+            recognizer.startListening(searchName, 1500);
 
         String caption = getResources().getString(captions.get(searchName));
         ((TextView) findViewById(R.id.caption_text)).setText(caption);

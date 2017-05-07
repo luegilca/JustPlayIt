@@ -3,7 +3,6 @@
 grammar player;
 
 <command> =	please play	|
-		please stop	|
           	please next	|
           	please previous	;
 
