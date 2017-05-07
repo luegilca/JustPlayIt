@@ -33,11 +33,13 @@ package edu.cmu.pocketsphinx.demo;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -67,7 +69,7 @@ public class PocketSphinxActivity extends Activity implements
     private static final String MEDIAPLAYER_SEARCH = "player";
 
     /* Keyword we are looking for to activate menu */
-    private static final String KEYPHRASE = "hello";
+    private static final String KEYPHRASE = "be quiet";
 
     /* Used to handle permission request */
     private static final int PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
@@ -84,8 +86,6 @@ public class PocketSphinxActivity extends Activity implements
         // Prepare the data for UI
         captions = new HashMap<String, Integer>();
         captions.put(KWS_SEARCH, R.string.kws_caption);
-        captions.put(MENU_SEARCH, R.string.menu_caption);
-        captions.put(DIGITS_SEARCH, R.string.digits_caption);
         //captions.put(PHONE_SEARCH, R.string.phone_caption);
         //captions.put(FORECAST_SEARCH, R.string.forecast_caption);
         captions.put(MEDIAPLAYER_SEARCH, R.string.player_caption);
@@ -183,12 +183,15 @@ public class PocketSphinxActivity extends Activity implements
             return;
 
         String text = hypothesis.getHypstr();
-        if (text.equals(KEYPHRASE))
-            switchSearch(MENU_SEARCH);
-        else if (text.equals(DIGITS_SEARCH))
-            switchSearch(DIGITS_SEARCH);
-        else if( text.equals(MEDIAPLAYER_SEARCH))
+        if (text.equals(KEYPHRASE)) {
+            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
+            sendOrderedBroadcast(i, null);
+
+            i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
+            sendOrderedBroadcast(i, null);
             switchSearch(MEDIAPLAYER_SEARCH);
+        }
         /**else if (text.equals(PHONE_SEARCH))
             switchSearch(PHONE_SEARCH);
         else if (text.equals(FORECAST_SEARCH))
@@ -203,9 +206,45 @@ public class PocketSphinxActivity extends Activity implements
     @Override
     public void onResult(Hypothesis hypothesis) {
         ((TextView) findViewById(R.id.result_text)).setText("");
+        makeText(getApplicationContext(), "asdasd", Toast.LENGTH_SHORT).show();
         if (hypothesis != null) {
             String text = hypothesis.getHypstr();
-            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+
+            switch (text){
+                case "please next":
+                    synchronized (this) {
+                        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
+                        sendOrderedBroadcast(i, null);
+
+                        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
+                        sendOrderedBroadcast(i, null);
+                    }
+                    break;
+                /*case "please stop":
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PAUSE));
+                    sendOrderedBroadcast(i, null);
+
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PAUSE));
+                    sendOrderedBroadcast(i, null);
+                    break;
+                */case "please play":
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PLAY));
+                    sendOrderedBroadcast(i, null);
+
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PLAY));
+                    sendOrderedBroadcast(i, null);
+                    break;
+                case "previous":
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
+                    sendOrderedBroadcast(i, null);
+
+                    i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
+                    sendOrderedBroadcast(i, null);
+                    break;
+            }
+
+
         }
     }
 
@@ -229,7 +268,7 @@ public class PocketSphinxActivity extends Activity implements
         if (searchName.equals(KWS_SEARCH))
             recognizer.startListening(searchName);
         else
-            recognizer.startListening(searchName, 10000);
+            recognizer.startListening(searchName, 1000);
 
         String caption = getResources().getString(captions.get(searchName));
         ((TextView) findViewById(R.id.caption_text)).setText(caption);
@@ -256,20 +295,12 @@ public class PocketSphinxActivity extends Activity implements
                 .getRecognizer();
         recognizer.addListener(this);
 
-        /** In your application you might not need to add all those searches.
+        /** In your |plication you might not need to add all those searches.
          * They are added here for demonstration. You can leave just one.
          */
 
         // Create keyword-activation search.
         recognizer.addKeyphraseSearch(KWS_SEARCH, KEYPHRASE);
-
-        // Create grammar-based search for selection between demos
-        File menuGrammar = new File(assetsDir, "menu.gram");
-        recognizer.addGrammarSearch(MENU_SEARCH, menuGrammar);
-
-        // Create grammar-based search for digit recognition
-        File digitsGrammar = new File(assetsDir, "digits.gram");
-        recognizer.addGrammarSearch(DIGITS_SEARCH, digitsGrammar);
 
         File mpGrammar = new File(assetsDir, "player.gram");
         recognizer.addGrammarSearch(MEDIAPLAYER_SEARCH, mpGrammar);

@@ -2,13 +2,8 @@
 
 grammar player;
 
-<command> = play    |
-          stop      |
-          next      |
-          previous  |
-          forward   |
-          backward  |
-          repeat    |
-          again     ;
+<command> =	please play	|
+          	please next	|
+          	please previous	;
 
 public <player> = <command>+;

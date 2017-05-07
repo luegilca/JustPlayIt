@@ -2,4 +2,4 @@
 
 grammar menu;
 
-public <item> = digits | player;
+public <item> = player;
