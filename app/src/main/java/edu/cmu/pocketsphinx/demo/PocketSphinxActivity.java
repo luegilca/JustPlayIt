@@ -91,6 +91,7 @@ public class PocketSphinxActivity extends Activity implements
         possibilities.add("please stop");
         possibilities.add("please next");
         possibilities.add("please previous");
+        possibilities.add("please");
 
         // Prepare the data for UI
         captions = new HashMap<String, Integer>();
