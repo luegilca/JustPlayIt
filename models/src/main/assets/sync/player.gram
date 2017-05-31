@@ -3,8 +3,9 @@
 grammar player;
 
 <command> =	please play	|
-		please stop	|
+		    please stop	|
           	please next	|
-          	please previous	;
+          	please previous	|
+          	please pause ;
 
 public <player> = <command>+;

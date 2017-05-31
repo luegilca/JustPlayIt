@@ -1,4 +1,4 @@
-package edu.cmu.pocketsphinx.demo.wear;
+package edu.cmu.pocketsphinx.justplayit.wear;
 
 import android.Manifest;
 import android.app.Activity;
@@ -53,7 +53,7 @@ public class WearActivity extends Activity implements
         captions.put(PHONE_SEARCH, R.string.phone_caption);
         captions.put(FORECAST_SEARCH, R.string.forecast_caption);
         setContentView(R.layout.activity_main);
-        ((TextView) findViewById(edu.cmu.pocketsphinx.demo.wear.R.id.caption_text))
+        ((TextView) findViewById(edu.cmu.pocketsphinx.justplayit.wear.R.id.caption_text))
                 .setText("Preparing the recognizer");
 
         // Check if user has given permission to record audio

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JustPlayIt!</string>
+    <string name="action_settings">Opciones</string>
+    <string name="no_more_songs">No se encontraron canciones en el almacenamiento externo (tarjeta sd).</string>
+    <string name="about_us">Acerca de...</string>
+    <string name="im_listening">Te estoy escuchando!</string>
+    <string name="kws_caption">Bienvenido, para comenzar la aplicación, por favor diga: </string>
+    <string name="player_caption">Los comandos son:</string>
+    <string name="prepare">Preparando el reconocedor...</string>
+    <string name="failed">El reconocedor ha fallado al iniciar: </string>
+</resources>
